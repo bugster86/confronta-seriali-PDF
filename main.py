@@ -71,32 +71,36 @@ def confronta_e_visualizza():
 
         file1=entry_file1.get()
         file2=entry_file2.get()
-        try:
-            differenza = confronta_file_pdf(file1, file2)
-            
-            #for i in range(100):
-            #    differenza.add(str(i))
-            
-            if len(differenza) > 0:
-                risultato_str = "\n".join(differenza)
-                risultati_window = tk.Toplevel(root)
-                risultati_window.title("Risultato Confronto")
 
-                # Aggiungi un widget Text per mostrare i risultati
-                risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=10, width=40)
-                risultati_text.insert(tk.END, risultato_str)
-                risultati_text.pack(padx=10, pady=10)
+        if file1 == file2:
+            messagebox.showwarning("ATTENZIONE!", f"I 2 file sono uguali. Sei proprio sicuro?")
+        else:
+            try:
+                differenza = confronta_file_pdf(file1, file2)
 
-                # Aggiungi uno scrollbar per la finestra del testo
-                #scrollbar = tk.Scrollbar(risultati_window, command=risultati_text.yview)
-                #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-                #risultati_text.config(yscrollcommand=scrollbar.set)
+                #for i in range(100):
+                #    differenza.add(str(i))
 
-            else:
-                messagebox.showinfo("Risultato Confronto", f"Nessuna differenza")
+                if len(differenza) > 0:
+                    risultato_str = "\n".join(differenza)
+                    risultati_window = tk.Toplevel(root)
+                    risultati_window.title("Risultato Confronto")
 
-        except Exception as e:
-            messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
+                    # Aggiungi un widget Text per mostrare i risultati
+                    risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=10, width=40)
+                    risultati_text.insert(tk.END, risultato_str)
+                    risultati_text.pack(padx=10, pady=10)
+
+                    # Aggiungi uno scrollbar per la finestra del testo
+                    #scrollbar = tk.Scrollbar(risultati_window, command=risultati_text.yview)
+                    #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+                    #risultati_text.config(yscrollcommand=scrollbar.set)
+
+                else:
+                    messagebox.showinfo("Risultato Confronto", f"Nessuna differenza")
+
+            except Exception as e:
+                messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
 if __name__ == "__main__":
 
