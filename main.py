@@ -92,6 +92,8 @@ def confronta_e_visualizza():
                     risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=40, width=40)
                     risultati_text.insert(tk.END, risultato_str)
                     risultati_text.pack(padx=10, pady=10)
+                    risultati_text.config(state=tk.DISABLED)
+                    
 
                     # Aggiungi uno scrollbar per la finestra del testo
                     #scrollbar = tk.Scrollbar(risultati_window, command=risultati_text.yview)
