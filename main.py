@@ -1,7 +1,5 @@
-import PyPDF2
 import fitz
 import re
-import sys
 import tkinter as tk
 from tkinter import filedialog
 from functools import partial
