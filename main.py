@@ -79,7 +79,19 @@ def confronta_e_visualizza():
             
             if len(differenza) > 0:
                 risultato_str = "\n".join(differenza)
-                messagebox.showinfo("Risultato Confronto", f"Differenze rilevate:\n{risultato_str}")
+                risultati_window = tk.Toplevel(root)
+                risultati_window.title("Risultato Confronto")
+
+                # Aggiungi un widget Text per mostrare i risultati
+                risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=10, width=40)
+                risultati_text.insert(tk.END, risultato_str)
+                risultati_text.pack(padx=10, pady=10)
+
+                # Aggiungi uno scrollbar per la finestra del testo
+                #scrollbar = tk.Scrollbar(risultati_window, command=risultati_text.yview)
+                #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+                #risultati_text.config(yscrollcommand=scrollbar.set)
+
             else:
                 messagebox.showinfo("Risultato Confronto", f"Nessuna differenza")
 
