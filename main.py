@@ -72,7 +72,9 @@ def confronta_e_visualizza():
         file1=entry_file1.get()
         file2=entry_file2.get()
 
-        if file1 == file2:
+        if file1 == "" or file2 == "":
+            messagebox.showwarning("ATTENZIONE!", f"Mi devi dare 2 file")
+        elif file1 == file2: 
             messagebox.showwarning("ATTENZIONE!", f"I 2 file sono uguali. Sei proprio sicuro?")
         else:
             try:
@@ -87,7 +89,7 @@ def confronta_e_visualizza():
                     risultati_window.title("Risultato Confronto")
 
                     # Aggiungi un widget Text per mostrare i risultati
-                    risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=10, width=40)
+                    risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=40, width=40)
                     risultati_text.insert(tk.END, risultato_str)
                     risultati_text.pack(padx=10, pady=10)
 
@@ -108,7 +110,9 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title("Confronto PDF")
 
-    label_file1 = tk.Label(root, text="Seleziona il primo file PDF:")
+    root.iconbitmap("batman.ico")
+
+    label_file1 = tk.Label(root, text="Seleziona il primo file PDF (primario):")
     label_file1.grid(row=0, column=0, padx=10, pady=10)
 
     entry_file1 = tk.Entry(root, width=40)
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     button_scegli_file1 = tk.Button(root, text="Scegli", command=partial(scegli_file, entry_file1))
     button_scegli_file1.grid(row=0, column=2, padx=10, pady=10)
 
-    label_file2 = tk.Label(root, text="Seleziona il secondo file PDF:")
+    label_file2 = tk.Label(root, text="Seleziona il secondo file PDF (confronto):")
     label_file2.grid(row=1, column=0, padx=10, pady=10)
 
     entry_file2 = tk.Entry(root, width=40)
