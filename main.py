@@ -67,9 +67,10 @@ def scegli_file(entry_widget):
     entry_widget.delete(0, tk.END)
     entry_widget.insert(0, file_path)
     
-def confronta_e_visualizza(file1, file2):
+def confronta_e_visualizza():
 
-   
+        file1=entry_file1.get()
+        file2=entry_file2.get()
         try:
             differenza = confronta_file_pdf(file1, file2)
             
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     button_scegli_file2 = tk.Button(root, text="Scegli", command=partial(scegli_file, entry_file2))
     button_scegli_file2.grid(row=1, column=2, padx=10, pady=10)
 
-    button_confronta = tk.Button(root, text="Confronta", command=partial(confronta_e_visualizza, entry_file1.get(), entry_file2.get()))
+    button_confronta = tk.Button(root, text="Confronta", command=partial(confronta_e_visualizza))
     button_confronta.grid(row=2, column=1, pady=20)
 
     root.mainloop()
