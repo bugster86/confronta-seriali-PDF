@@ -8,9 +8,9 @@ from tkinter import messagebox
 def confronta_file_pdf(file_pdf1,file_pdf2):
     codici_seriali1 = set()
     codici_seriali2 = set()
-    regex_seriale = re.compile(r'Nr\. Seriale: (\w+)', re.IGNORECASE)
-    regex_lotto = re.compile(r'Nr\. Lotto: (\w+)', re.IGNORECASE)
-    regex_mac = re.compile(r'Nr\. Seriale: (\w+|\d{2}:\d{2}:\d{2}:\w{2}:\w{2}:\w{2})', re.IGNORECASE)
+    regex_seriale = re.compile(r'Nr\. Seriale: ([^:]{12})', re.IGNORECASE)
+    regex_lotto = re.compile(r'Nr\. Lotto: ([^:]{16})', re.IGNORECASE)
+    regex_mac = re.compile(r'Nr\. Seriale: (..:..:..:..:..:..)', re.IGNORECASE)
     
     #print ("\n\n")
     
@@ -20,6 +20,11 @@ def confronta_file_pdf(file_pdf1,file_pdf2):
             testo_pagina = pagina_corrente.get_text()
             #print (testo_pagina)
             
+            match = regex_mac.findall(testo_pagina)
+            if match:
+                codici_seriali1.update(match)
+
+
             match = regex_seriale.findall(testo_pagina)
             if match:
                 codici_seriali1.update(match)
@@ -28,9 +33,11 @@ def confronta_file_pdf(file_pdf1,file_pdf2):
             if match:
                 codici_seriali1.update(match)
             
-            match = regex_mac.findall(testo_pagina)
-            if match:
-                codici_seriali1.update(match)
+
+            # print(testo_pagina)
+           
+           
+           
             
     #print ("Codici del file {} \n".format(file_pdf1),codici_seriali1)
         
@@ -41,6 +48,10 @@ def confronta_file_pdf(file_pdf1,file_pdf2):
             pagina_corrente = pdf_file[pagina]
             testo_pagina = pagina_corrente.get_text()
             #print (testo_pagina)
+
+            match = regex_mac.findall(testo_pagina)
+            if match:
+               codici_seriali2.update(match)
             
             match = regex_seriale.findall(testo_pagina)
             if match:
@@ -50,9 +61,9 @@ def confronta_file_pdf(file_pdf1,file_pdf2):
             if match:
                 codici_seriali2.update(match)
                 
-            match = regex_mac.findall(testo_pagina)
-            if match:
-                codici_seriali2.update(match)
+ 
+ 
+ 
             
     #print ("Codici del file {} \n".format(file_pdf2),codici_seriali2)
     
