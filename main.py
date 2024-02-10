@@ -67,8 +67,8 @@ def confronta_file_pdf(file_pdf1,file_pdf2):
             
     #print ("Codici del file {} \n".format(file_pdf2),codici_seriali2)
     
-    differenza=codici_seriali1-codici_seriali2
-    return differenza
+    return (codici_seriali1-codici_seriali2,codici_seriali2-codici_seriali1)
+    
 
 
 def scegli_file(entry_widget):
@@ -92,24 +92,28 @@ def confronta_e_visualizza():
                 #for i in range(100):
                 #    differenza.add(str(i))
 
-                if len(differenza) > 0:
-                    risultato_str = "\n".join(differenza)
-                    risultati_window = tk.Toplevel(root)
-                    risultati_window.title("Risultato Confronto")
+                if len(differenza[0]) > 0:
+                    risultato_str1 = "\n".join(sorted(differenza[0]))
+                    risultati_window1 = tk.Toplevel(root)
+                    risultati_window1.title("Risultato Confronto primario to secondario")
 
                     # Aggiungi un widget Text per mostrare i risultati
-                    risultati_text = tk.Text(risultati_window, wrap=tk.WORD, height=40, width=40)
-                    risultati_text.insert(tk.END, risultato_str)
+                    risultati_text = tk.Text(risultati_window1, wrap=tk.WORD, height=40, width=40)
+                    risultati_text.insert(tk.END, risultato_str1)
                     risultati_text.pack(padx=10, pady=10)
                     risultati_text.config(state=tk.DISABLED)
                     
-
-                    # Aggiungi uno scrollbar per la finestra del testo
-                    #scrollbar = tk.Scrollbar(risultati_window, command=risultati_text.yview)
-                    #scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-                    #risultati_text.config(yscrollcommand=scrollbar.set)
-
-                else:
+                if len(differenza[1]) > 0:
+                    risultato_str2 = "\n".join(sorted(differenza[1]))
+                    risultati_window2 = tk.Toplevel(root)
+                    risultati_window2.title("Risultato Confronto secondario to primario")
+                    # Aggiungi un widget Text per mostrare i risultati
+                    risultati_text = tk.Text(risultati_window2, wrap=tk.WORD, height=40, width=40)
+                    risultati_text.insert(tk.END, risultato_str2)
+                    risultati_text.pack(padx=10, pady=10)
+                    risultati_text.config(state=tk.DISABLED)
+                    
+                if len(differenza[0]) == 0 and len(differenza[1]) == 0:
                     messagebox.showinfo("Risultato Confronto", f"Nessuna differenza")
 
             except Exception as e:
