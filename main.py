@@ -5,15 +5,14 @@ from tkinter import filedialog
 from functools import partial
 from tkinter import messagebox
 
-regole=[
-"Nr\. Seriale: ([^:]{12})",
-"Nr\. Lotto: ([^:]{16})",
-"Nr\. Seriale: (..:..:..:..:..:..)",
-"ID: ([^:]{44})",
-"",
-"",
-"" #regola vuota che corrisponde alla casella di testo in cui possiamo inserire testo libero
-]
+
+try:
+    with open('lista_regole.txt', 'r') as file:
+        # Legge ogni linea del file come un elemento della lista
+        regole = [line.strip() for line in file]
+except:
+    regole=[""]
+
 
 lista_check=[]
 lista_label=[]
@@ -24,15 +23,9 @@ lista_intvar=[]
 def confronta_file_pdf(file_pdf1,file_pdf2):
     codici_seriali1 = set()
     codici_seriali2 = set()
-    
-   
-    #Crea la lista delle regular expression da usare in base ai valori che sono flaggati
-    for oggetto in lista_intvar:
-        print (oggetto.get())
-    
+     
     regular_expressions=[ re.compile(regola, re.IGNORECASE) for i,regola in enumerate(regole) if lista_intvar[i].get() == 1 and regola != "" ]
 
-    print (regular_expressions)
     
     with fitz.open(file_pdf1) as pdf_file:
         for pagina in range(pdf_file.page_count):
@@ -76,6 +69,8 @@ def confronta_e_visualizza():
             messagebox.showwarning("ATTENZIONE!", f"Mi devi dare 2 file")
         elif file1 == file2: 
             messagebox.showwarning("ATTENZIONE!", f"I 2 file sono uguali. Sei proprio sicuro?")
+        elif all(element.get() == 0 for element in lista_intvar):
+            messagebox.showwarning("ATTENZIONE", f"Almeno un checkbox deve essere impostato!")
         else:
             try:
                 differenza = confronta_file_pdf(file1, file2)
@@ -86,6 +81,7 @@ def confronta_e_visualizza():
                 if len(differenza[0]) > 0:
                     risultato_str1 = "\n".join(sorted(differenza[0]))
                     risultati_window1 = tk.Toplevel(root)
+                    risultati_window1.iconbitmap("batman.ico")
                     risultati_window1.title("Risultato Confronto primario to secondario")
 
                     # Aggiungi un widget Text per mostrare i risultati
@@ -97,6 +93,7 @@ def confronta_e_visualizza():
                 if len(differenza[1]) > 0:
                     risultato_str2 = "\n".join(sorted(differenza[1]))
                     risultati_window2 = tk.Toplevel(root)
+                    risultati_window2.iconbitmap("batman.ico")
                     risultati_window2.title("Risultato Confronto secondario to primario")
                     # Aggiungi un widget Text per mostrare i risultati
                     risultati_text = tk.Text(risultati_window2, wrap=tk.WORD, height=40, width=40)
