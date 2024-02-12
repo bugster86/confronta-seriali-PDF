@@ -5,65 +5,56 @@ from tkinter import filedialog
 from functools import partial
 from tkinter import messagebox
 
+regole=[
+"Nr\. Seriale: ([^:]{12})",
+"Nr\. Lotto: ([^:]{16})",
+"Nr\. Seriale: (..:..:..:..:..:..)",
+"ID: ([^:]{44})",
+"",
+"",
+"" #regola vuota che corrisponde alla casella di testo in cui possiamo inserire testo libero
+]
+
+lista_check=[]
+lista_label=[]
+lista_intvar=[]
+
+
+
 def confronta_file_pdf(file_pdf1,file_pdf2):
     codici_seriali1 = set()
     codici_seriali2 = set()
-    regex_seriale = re.compile(r'Nr\. Seriale: ([^:]{12})', re.IGNORECASE)
-    regex_lotto = re.compile(r'Nr\. Lotto: ([^:]{16})', re.IGNORECASE)
-    regex_mac = re.compile(r'Nr\. Seriale: (..:..:..:..:..:..)', re.IGNORECASE)
     
-    #print ("\n\n")
+   
+    #Crea la lista delle regular expression da usare in base ai valori che sono flaggati
+    for oggetto in lista_intvar:
+        print (oggetto.get())
+    
+    regular_expressions=[ re.compile(regola, re.IGNORECASE) for i,regola in enumerate(regole) if lista_intvar[i].get() == 1 and regola != "" ]
+
+    print (regular_expressions)
     
     with fitz.open(file_pdf1) as pdf_file:
         for pagina in range(pdf_file.page_count):
             pagina_corrente = pdf_file[pagina]
             testo_pagina = pagina_corrente.get_text()
-            #print (testo_pagina)
             
-            match = regex_mac.findall(testo_pagina)
-            if match:
-                codici_seriali1.update(match)
+            for rule in regular_expressions:
+              match=rule.findall(testo_pagina)
+              if match: codici_seriali1.update(match)
 
-
-            match = regex_seriale.findall(testo_pagina)
-            if match:
-                codici_seriali1.update(match)
-                
-            match = regex_lotto.findall(testo_pagina)
-            if match:
-                codici_seriali1.update(match)
-            
-
-            # print(testo_pagina)
-           
-           
-           
-            
-    #print ("Codici del file {} \n".format(file_pdf1),codici_seriali1)
-        
-    #print ("\n\n")
        
     with fitz.open(file_pdf2) as pdf_file:
         for pagina in range(pdf_file.page_count):
             pagina_corrente = pdf_file[pagina]
             testo_pagina = pagina_corrente.get_text()
             #print (testo_pagina)
-
-            match = regex_mac.findall(testo_pagina)
-            if match:
-               codici_seriali2.update(match)
             
-            match = regex_seriale.findall(testo_pagina)
-            if match:
-                codici_seriali2.update(match)
-                
-            match = regex_lotto.findall(testo_pagina)
-            if match:
-                codici_seriali2.update(match)
-                
- 
- 
- 
+            for rule in regular_expressions:
+                match=rule.findall(testo_pagina)
+                if match: codici_seriali2.update(match)
+           
+   
             
     #print ("Codici del file {} \n".format(file_pdf2),codici_seriali2)
     
@@ -119,8 +110,32 @@ def confronta_e_visualizza():
             except Exception as e:
                 messagebox.showerror("Errore", f"Si è verificato un errore: {str(e)}")
 
-if __name__ == "__main__":
+def checkbox_regole():
 
+    global lista_check,lista_label,lista_intvar
+
+
+    lista_intvar=[tk.IntVar() for regola in regole]
+    lista_check=[tk.Checkbutton(root,variable=var) for i,var in enumerate(lista_intvar)]
+    lista_label=[tk.Label(root,text=regola)  if "" != regola else tk.Entry(root,width=30) for regola in regole]
+
+
+
+    for oggetto in lista_label:
+        if isinstance(oggetto,tk.Entry):
+            oggetto.config(background="pink")
+            oggetto.insert(0,"Inserisci la tua custom regexp")
+
+
+    for i in range (len(lista_check)):
+        
+        if regole[i]:
+            lista_check[i].select()
+        lista_check[i].grid(row=i+3,column=0)
+        lista_label[i].grid(row=i+3,column=1)
+
+    
+if __name__ == "__main__":
 
     root = tk.Tk()
     root.title("Confronto PDF")
@@ -147,6 +162,8 @@ if __name__ == "__main__":
 
     button_confronta = tk.Button(root, text="Confronta", command=partial(confronta_e_visualizza))
     button_confronta.grid(row=2, column=1, pady=20)
+
+    checkbox_regole()
 
     root.mainloop()
 
