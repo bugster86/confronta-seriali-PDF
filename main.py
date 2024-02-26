@@ -4,6 +4,27 @@ import tkinter as tk
 from tkinter import filedialog
 from functools import partial
 from tkinter import messagebox
+import sqlite3
+from datetime import datetime
+import pickle
+from tkinter import ttk
+
+conn = sqlite3.connect('storico.db')
+cursor = conn.cursor()
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS confronti (
+        id INTEGER PRIMARY KEY,
+        data TEXT NOT NULL,
+        primofile TEXT NOT NULL,
+        secondofile TEXT NOT NULL,
+        differenze BLOB NOT NULL
+    )
+''')
+
+conn.commit()
+conn.close()
+
 
 
 try:
@@ -59,6 +80,7 @@ def scegli_file(entry_widget):
     file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
     entry_widget.delete(0, tk.END)
     entry_widget.insert(0, file_path)
+
     
 def confronta_e_visualizza():
 
@@ -77,6 +99,27 @@ def confronta_e_visualizza():
 
                 #for i in range(100):
                 #    differenza.add(str(i))
+
+                #Inserisci la differenze nel database
+                conn = sqlite3.connect('storico.db')
+                cursor = conn.cursor()
+
+                #print(datetime.now(),file1,file2,differenza)
+
+
+                cursor.execute('''
+                    INSERT into confronti (
+                        data,
+                        primofile,
+                        secondofile,
+                        differenze
+                    ) values (?,?,?,?)
+                ''',(datetime.now(),file1,file2,pickle.dumps(differenza)))
+
+                conn.commit()
+                conn.close()
+
+
 
                 if len(differenza[0]) > 0:
                     risultato_str1 = "\n".join(sorted(differenza[0]))
@@ -132,6 +175,28 @@ def checkbox_regole():
         lista_label[i].grid(row=i+3,column=1)
 
     
+def consulta_storico():
+    conn = sqlite3.connect('storico.db')
+    cursor = conn.cursor()
+
+
+    finestra = tk.Tk()
+    finestra.title("Storico Risultati")
+    tabella = ttk.Treeview(finestra, columns=("Colonna1", "Colonna2", "Colonna3","Colonna4"), show="headings")
+
+    # Definizione dei nomi delle colonne
+    tabella.heading("Colonna1", text="Data")
+    tabella.heading("Colonna2", text="Primo File")
+    tabella.heading("Colonna3", text="Secondo File")
+    tabella.heading("Colonna4", text="Differenze")
+
+    res = cursor.execute("SELECT * FROM confronti")
+    for item in res.fetchall():
+        tabella.insert("","end",values=[item[1],item[2],item[3],pickle.loads(item[4])])
+
+    # Posizionamento della tabella nella finestra
+    tabella.pack(fill="both", expand=True, padx=10, pady=10)
+
 if __name__ == "__main__":
 
     root = tk.Tk()
@@ -159,6 +224,8 @@ if __name__ == "__main__":
 
     button_confronta = tk.Button(root, text="Confronta", command=partial(confronta_e_visualizza))
     button_confronta.grid(row=2, column=1, pady=20)
+    button_storico = tk.Button(root, text="Visualizza Storico", command=partial(consulta_storico))
+    button_storico.grid(row=2, column=2, pady=20)
 
     checkbox_regole()
 
